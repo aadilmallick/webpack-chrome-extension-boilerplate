@@ -1,61 +1,44 @@
-/**********************************************
- *                                           *
- *            Typing                          *
- *                                           *
- **********************************************/
+// typings for messages between background and content script
 
-export enum MessageTypes {
-  TOGGLE_OVERLAY = "TOGGLE_OVERLAY",
-}
+export enum MessageTypes {}
 
 export type SendingMessage = {
   type: Message;
-  payload?: { [key: string]: any } | undefined | null;
+  payload?: { [key: string]: any };
 };
 
 export type Message = keyof typeof MessageTypes;
+export type Response = SendingMessage["payload"];
 
-type responseCallback = (response?) => void;
-
-/**********************************************
- *                                           *
- *            sending messages                        *
- *                                           *
- **********************************************/
+// sending messages
 
 export const sendMessageToContentScript = async (
   message: Message,
-  responseCallback?: responseCallback,
   payload?: SendingMessage["payload"]
-) => {
+): Promise<any> => {
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-  const responseFunc = responseCallback || (() => true);
-  chrome.tabs.sendMessage(
-    tabs[0].id!,
-    {
-      type: message,
-      payload,
-    },
-    responseFunc
-  );
+  return chrome.tabs.sendMessage(tabs[0].id!, {
+    type: message,
+    payload: payload || {},
+  });
 };
 
 export const sendMessageFromContentScript = async (
   message: Message,
-  responseCallback?: (response?) => void,
   payload?: SendingMessage["payload"]
-) => {
-  const responseFunc = responseCallback || (() => true);
-  chrome.runtime.sendMessage({ type: message, payload }, responseFunc);
+): Promise<any> => {
+  return chrome.runtime.sendMessage({ type: message, payload: payload || {} });
 };
 
-/**********************************************
- *                                           *
- *            receiving messages                        *
- *                                           *
- **********************************************/
+// receiving messages
 
-type ReceivingMessageFunc = (
+type ReceivingMessageFuncAsync = (
+  message?: SendingMessage,
+  sender?: chrome.runtime.MessageSender,
+  sendResponse?: (response?: any) => void
+) => Promise<void>;
+
+type ReceivingMessageFuncSync = (
   message?: SendingMessage,
   sender?: chrome.runtime.MessageSender,
   sendResponse?: (response?: any) => void
@@ -65,9 +48,9 @@ type ReceivingMessageFunc = (
  *
  * @desc to avoid error, you must send a response in the callback function.
  */
-export const addMessageListener = (
+export const addMessageListenerAsync = (
   receivingMessage: Message,
-  func: ReceivingMessageFunc
+  func: ReceivingMessageFuncAsync
 ) => {
   const messageCallback = (
     message: SendingMessage,
@@ -75,8 +58,8 @@ export const addMessageListener = (
     sendResponse: (response?: any) => void
   ) => {
     if (message.type === receivingMessage) {
-      func(message, sender, sendResponse);
-      sendResponse();
+      func(message, sender, sendResponse).then(() => true);
+      return true;
     }
     return true;
   };
@@ -85,7 +68,34 @@ export const addMessageListener = (
   return messageCallback;
 };
 
-export const removeMessageListener = (callback: ReceivingMessageFunc) => {
+export const addMessageListenerSync = (
+  receivingMessage: Message,
+  func: ReceivingMessageFuncSync
+) => {
+  const messageCallback = (
+    message: SendingMessage,
+    sender: chrome.runtime.MessageSender,
+    sendResponse: (response?: any) => void
+  ) => {
+    if (message.type === receivingMessage) {
+      func(message, sender, sendResponse);
+    }
+  };
+  chrome.runtime.onMessage.addListener(messageCallback);
+
+  return messageCallback;
+};
+
+export const removeMessageListenerAsync = (
+  callback: ReceivingMessageFuncAsync
+) => {
+  console.log("removing message listener");
+  chrome.runtime.onMessage.removeListener(callback);
+};
+
+export const removeMessageListenerSync = (
+  callback: ReceivingMessageFuncSync
+) => {
   console.log("removing message listener");
   chrome.runtime.onMessage.removeListener(callback);
 };
