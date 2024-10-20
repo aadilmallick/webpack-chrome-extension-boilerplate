@@ -1,6 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import "./popup.scss";
+import "./popup.css";
 
 const App: React.FC<{}> = () => {
   return (
