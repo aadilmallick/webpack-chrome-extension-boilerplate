@@ -32,3 +32,16 @@ Boilerplate for building Chrome Extensions in React and TypeScript using a simpl
 - Folders get flattened, static references to images from HTML do not need to be relative (i.e. `icon.png` instead of `../static/icon.png`)
 - Importing local ts/tsx/css files should be relative, since Webpack will build a dependancy graph using these paths
 - Update the manifest file as per usual for chrome related permissions, references to files in here should also be flattened and not be relative
+
+```tsx
+const App: React.FC<{}> = () => {
+  return (
+    <div>
+      <p className="text-white text-2xl underline font-black">Hello world</p>
+      {/* this is how you refer to assets: they live in the static folder, and you refer to them
+      absolutely. */}
+      <img src="icon.png" />
+    </div>
+  );
+};
+```
