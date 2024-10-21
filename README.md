@@ -4,6 +4,17 @@ Boilerplate for building Chrome Extensions in React and TypeScript using a simpl
 
 ## Getting Started
 
+```bash
+git clone https://github.com/aadilmallick/webpack-chrome-extension-boilerplate.git my-extension
+cd my-extension
+rm -rf .git
+git init
+git add .
+git commit -m "First commit"
+npm i
+npm start
+```
+
 1. `npm i` to install dependancies
 2. `npm start` to start running the fast development mode Webpack build process that bundle files into the `dist` folder
 3. `npm i --save-dev <package_name>` to install new packages
