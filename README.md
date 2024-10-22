@@ -12,7 +12,7 @@ git init
 git add .
 git commit -m "First commit"
 npm i
-npm start
+code .
 ```
 
 1. `npm i` to install dependancies
