@@ -59,12 +59,19 @@ module.exports = {
 };
 
 function getHtmlPlugins(chunks) {
-  return chunks.map(
-    (chunk) =>
-      new HtmlPlugin({
+  return chunks.map((chunk) => {
+    if (chunk === "popup") {
+      return new HtmlPlugin({
         title: "React Extension",
         filename: `${chunk}.html`,
         chunks: [chunk],
-      })
-  );
+        template: path.resolve("src/webpack-html-templates/popup.html"),
+      });
+    }
+    return new HtmlPlugin({
+      title: "React Extension",
+      filename: `${chunk}.html`,
+      chunks: [chunk],
+    });
+  });
 }

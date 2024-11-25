@@ -52,6 +52,13 @@ export default class Scripting {
     });
   }
 
+  static async insertCssString(tabId: number, css: string) {
+    await chrome.scripting.insertCSS({
+      css,
+      target: { tabId },
+    });
+  }
+
   static async removeCss(tabId: number, cssFiles: string | string[]) {
     await chrome.scripting.removeCSS({
       files: getArray(cssFiles),
