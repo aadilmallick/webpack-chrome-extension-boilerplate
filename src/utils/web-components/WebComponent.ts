@@ -55,7 +55,7 @@ export default abstract class WebComponent<
 
   constructor(options: {
     templateId: string; // template id
-    HTMLContent: string; // html content of template
+    HTMLContent?: string; // html content of template
     cssFileName?: string; // filename of css to apply on template, if provided
     cssContent?: string; // css content to apply on template, if provided
   }) {
@@ -66,13 +66,26 @@ export default abstract class WebComponent<
     this.styles = document.createElement("style");
     this.template = WebComponent.createTemplate(
       options.templateId,
-      options.HTMLContent
+      options.HTMLContent ??
+        (this.constructor as typeof WebComponent).HTMLContent
     );
     // create utility selector
-    this.$ = this.template.content.querySelector.bind(this.template.content);
+    this.$ = this.shadow.querySelector.bind(this.shadow);
     // 3. attach styles
     if (options.cssContent) this.styles.textContent = options.cssContent;
     else if (options.cssFileName) this.loadExternalCSS(options.cssFileName);
+    else
+      this.styles.textContent = (
+        this.constructor as typeof WebComponent
+      ).CSSContent;
+  }
+
+  static get HTMLContent() {
+    return "";
+  }
+
+  static get CSSContent() {
+    return "";
   }
 
   // called when element is inserted to the DOM
@@ -125,6 +138,13 @@ export default abstract class WebComponent<
     oldVal: string,
     newVal: string
   ) {
-    console.log("observedAttributes changed");
+    console.log(
+      "observedAttributes changed",
+      attrName,
+      "from",
+      oldVal,
+      "to",
+      newVal
+    );
   }
 }

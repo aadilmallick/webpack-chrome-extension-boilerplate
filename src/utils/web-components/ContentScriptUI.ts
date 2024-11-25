@@ -43,3 +43,14 @@ export default class ContentScriptUI extends WebComponent<
     WebComponent.register("content-script-ui", ContentScriptUI);
   }
 }
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      "content-script-ui": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >;
+    }
+  }
+}
