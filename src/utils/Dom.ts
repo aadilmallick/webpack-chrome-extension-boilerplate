@@ -134,3 +134,19 @@ export class DateModel {
     return formattedTime;
   }
 }
+
+export function createSelector(
+  containerElement: HTMLElement,
+  className: string
+) {
+  const element = (containerElement || document).querySelector(className);
+  if (!element) throw new Error(`Element with class ${className} not found`);
+  return ((_class: keyof HTMLElementTagNameMap) => {
+    const query = element.querySelector(_class);
+    if (!query)
+      throw new Error(
+        `Parent ${className}: Element with selector ${_class} not found`
+      );
+    return query;
+  }) as InstanceType<typeof HTMLElement>["querySelector"];
+}

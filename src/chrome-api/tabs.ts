@@ -1,5 +1,4 @@
 // requires tabs permission for accessing sensitive properties like url, title, etc
-
 interface TabAudioModel {
   toggleMuted(): Promise<void>;
   getMuted(): Promise<boolean>;
@@ -138,5 +137,10 @@ export class TabModel {
   async remove() {
     if (!this.tab?.id) throw new Error("Tab id not found");
     await chrome.tabs.remove(this.tab.id);
+  }
+
+  async changeUrl(url: string) {
+    if (!this.tab?.id) throw new Error("Tab id not found");
+    return await chrome.tabs.update(this.tab.id, { url });
   }
 }
