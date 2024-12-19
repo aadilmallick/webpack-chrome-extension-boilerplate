@@ -22,11 +22,7 @@ const CSSContent = css`
   }
 `;
 
-const observedAttributes = [] as const;
-
-export default class ContentScriptUI extends WebComponent<
-  typeof observedAttributes
-> {
+export default class ContentScriptUI extends WebComponent {
   constructor() {
     super({
       HTMLContent,
@@ -35,13 +31,15 @@ export default class ContentScriptUI extends WebComponent<
     });
   }
 
-  static get observedAttributes() {
-    return observedAttributes;
-  }
-
   static registerSelf() {
     WebComponent.register("content-script-ui", ContentScriptUI);
   }
+
+  attributeChangedCallback(
+    attrName: string,
+    oldVal: string,
+    newVal: string
+  ): void {}
 }
 
 declare global {

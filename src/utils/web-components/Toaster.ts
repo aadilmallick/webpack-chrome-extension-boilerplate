@@ -95,7 +95,6 @@ export default class Toaster extends WebComponent<typeof observedAttributes> {
     oldVal: string,
     newVal: string
   ): void {
-    super.attributeChangedCallback(attrName, oldVal, newVal);
     this[attrName] = newVal;
     if (attrName === "data-position") {
       this.$(".toast-container")?.classList.remove(oldVal);

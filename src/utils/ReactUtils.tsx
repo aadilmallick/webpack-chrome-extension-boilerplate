@@ -118,7 +118,7 @@ export function useCssVariables<
     if (ref.current) {
       const manager = new CSSVariablesManager<V>(ref.current);
       for (const [key, value] of Object.entries(variables)) {
-        manager.set(key, value);
+        manager.set(key, value as (typeof variables)[keyof typeof variables]);
       }
     }
   }, [ref, variables]);

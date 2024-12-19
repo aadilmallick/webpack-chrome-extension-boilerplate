@@ -14,6 +14,13 @@ type Selector = {
   <E extends Element = Element>(selectors: string): E | null;
 };
 
+/**
+ * Tips for using this class:
+ *
+ * 1. Always call connectedCallback() and always do super.connectedCallback() in the child class.
+ * Always do DOM stuff in connectedCallback() and not in the constructor.
+ */
+
 export default abstract class WebComponent<
   T extends readonly string[] = readonly string[]
 > extends HTMLElement {
@@ -53,6 +60,7 @@ export default abstract class WebComponent<
     this.styles.textContent = css;
   }
 
+  private templateId: string;
   constructor(options: {
     templateId: string; // template id
     HTMLContent?: string; // html content of template
@@ -61,16 +69,18 @@ export default abstract class WebComponent<
   }) {
     // 1. always call super()
     super();
+    this.templateId = options.templateId;
     // 2. create shadow DOM and create template
     this.shadow = this.attachShadow({ mode: "open" });
+    this.$ = this.shadow.querySelector.bind(this.shadow);
+
     this.styles = document.createElement("style");
     this.template = WebComponent.createTemplate(
       options.templateId,
       options.HTMLContent ??
         (this.constructor as typeof WebComponent).HTMLContent
     );
-    // create utility selector
-    this.$ = this.shadow.querySelector.bind(this.shadow);
+
     // 3. attach styles
     if (options.cssContent) this.styles.textContent = options.cssContent;
     else if (options.cssFileName) this.loadExternalCSS(options.cssFileName);
@@ -91,12 +101,14 @@ export default abstract class WebComponent<
   // called when element is inserted to the DOM
   connectedCallback() {
     this.createComponent();
+    console.log(`${this.templateId}: connectedCallback finished executing`);
   }
 
-  createComponent() {
+  private createComponent() {
     const content = this.template.content.cloneNode(true);
     this.shadow.appendChild(this.styles);
     this.shadow.appendChild(content);
+    // create utility selector
   }
 
   // triggered when element is removed from document
@@ -112,9 +124,9 @@ export default abstract class WebComponent<
   // region ATTRIBUTES
 
   // override this getter to specify which attributes to observe
-  //   static get observedAttributes() {
-  //     return [] as string[];
-  //   }
+  static get observedAttributes() {
+    return [] as readonly string[];
+  }
 
   // gets an attribute from the observedAttributes
   getObservableAttr(attrName: T[number]) {
@@ -132,19 +144,12 @@ export default abstract class WebComponent<
     this.removeAttribute(attrName);
   }
 
-  // listens to changes fo attributes from the observedAttributes
+  // listens to changes of attributes from the observedAttributes
   attributeChangedCallback(
     attrName: T[number],
     oldVal: string,
     newVal: string
   ) {
-    console.log(
-      "observedAttributes changed",
-      attrName,
-      "from",
-      oldVal,
-      "to",
-      newVal
-    );
+    console.log("attributeChangedCallback run", attrName, oldVal, newVal);
   }
 }
