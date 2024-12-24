@@ -2,9 +2,9 @@
 
 import React, { useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { DOM } from "../utils/Dom";
+import { css, DOM } from "../utils/Dom";
 
-// const stylesTag = DOM.
+const stylesTag = DOM.addStyleTag(css``);
 
 const App = () => {
   return <div></div>;
