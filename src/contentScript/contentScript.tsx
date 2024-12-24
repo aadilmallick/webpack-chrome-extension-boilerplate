@@ -2,7 +2,9 @@
 
 import React, { useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import "./contentScript.css";
+import { DOM } from "../utils/Dom";
+
+// const stylesTag = DOM.
 
 const App = () => {
   return <div></div>;

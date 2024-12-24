@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import PermissionsModel from "../chrome-api/permissions";
 import { ChromeStorage } from "../chrome-api/storage";
 import { CSSVariablesManager } from "./Dom";
+import WebComponent from "./web-components/WebComponent";
 
 export function injectRoot(app: React.ReactNode, id?: string) {
   const root = document.createElement("div");
@@ -66,7 +67,20 @@ export function useGetOptionalPermissions(
     checkPerms();
   }, []);
 
-  return { permissionsGranted, setPermissionsGranted };
+  const onCheckedChange = async (checked: boolean) => {
+    setPermissionsGranted(checked);
+    if (checked) {
+      const granted = await optionalPermissions.request();
+      if (!granted) setPermissionsGranted(false);
+    }
+    if (!checked) {
+      const permissionsWereGranted =
+        await optionalPermissions.permissionIsGranted();
+      if (permissionsWereGranted) await optionalPermissions.remove();
+    }
+  };
+
+  return { permissionsGranted, setPermissionsGranted, onCheckedChange };
 }
 
 export function useChromeStorage<
@@ -89,7 +103,6 @@ export function useChromeStorage<
 
   React.useEffect(() => {
     const listener = storage.onChanged((change, key) => {
-      console.log(change, key);
       setValue(change.newValue);
     });
 
@@ -106,6 +119,16 @@ export function useChromeStorage<
   }
 
   return { data: value, loading, setValueAndStore };
+}
+
+export function useWebComponentRef<T extends WebComponent>() {
+  const ref = React.useRef<T>(null);
+
+  function refActive() {
+    return ref.current !== null;
+  }
+
+  return { ref, refActive };
 }
 
 export function useCssVariables<

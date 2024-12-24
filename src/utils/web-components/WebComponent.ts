@@ -14,6 +14,17 @@ type Selector = {
   <E extends Element = Element>(selectors: string): E | null;
 };
 
+function querySelectorWithThrow(containerElement: HTMLElement | ShadowRoot) {
+  const select = containerElement.querySelector.bind(
+    containerElement
+  ) as Selector;
+  return ((_class: keyof HTMLElementTagNameMap) => {
+    const query = select(_class);
+    if (!query) throw new Error(`Element with selector ${_class} not found`);
+    return query;
+  }) as Selector;
+}
+
 /**
  * Tips for using this class:
  *
@@ -28,6 +39,7 @@ export default abstract class WebComponent<
   protected styles: HTMLStyleElement;
   protected template: HTMLTemplateElement;
   public $: Selector;
+  public $throw: Selector;
 
   static register(name: string, _class: CustomElementConstructor): void {
     if (!customElements.get(name)) {
@@ -73,6 +85,7 @@ export default abstract class WebComponent<
     // 2. create shadow DOM and create template
     this.shadow = this.attachShadow({ mode: "open" });
     this.$ = this.shadow.querySelector.bind(this.shadow);
+    this.$throw = querySelectorWithThrow(this.shadow);
 
     this.styles = document.createElement("style");
     this.template = WebComponent.createTemplate(

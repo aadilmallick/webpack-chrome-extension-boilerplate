@@ -3,6 +3,44 @@ const CopyPlugin = require("copy-webpack-plugin");
 const HtmlPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
+console.log("environemnt", process.env.NODE_ENV);
+
+/**
+ * Content script entry points must not be optimzied by webpack
+ * or else they can't use npm.
+ *
+ * They should also not be rendered as html
+ */
+class ContentScriptEntryPoint {
+  constructor(name, filepath) {
+    this.filepath = filepath;
+    this.name;
+  }
+
+  shouldOptimize(chunkName) {
+    if (chunkName === this.name) {
+      return false;
+    }
+    return true;
+  }
+}
+
+const contentScriptEntryPointFactory = {
+  // add entry points here
+  entryPoints: [],
+  optimize: function (chunkName) {
+    if (this.entryPoints.length === 0) {
+      return true;
+    }
+    return this.entryPoints.every((entryPoint) => {
+      return entryPoint.shouldOptimize(chunkName);
+    });
+  },
+};
+
+/**
+ * @type {import('webpack').Configuration}
+ */
 module.exports = {
   entry: {
     popup: path.resolve("src/popup/popup.tsx"),
@@ -15,7 +53,14 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: "ts-loader",
+        use: [
+          {
+            loader: "ts-loader",
+            options: {
+              transpileOnly: process.env.NODE_ENV === "production",
+            },
+          },
+        ],
         exclude: /node_modules/,
       },
       {
@@ -55,7 +100,14 @@ module.exports = {
   optimization: {
     splitChunks: {
       chunks(chunk) {
-        return chunk.name !== "contentScript" && chunk.name !== "background";
+        const contentChunksOptimized = contentScriptEntryPointFactory.optimize(
+          chunk.name
+        );
+        return (
+          chunk.name !== "contentScript" &&
+          chunk.name !== "background" &&
+          contentChunksOptimized
+        );
       },
     },
   },

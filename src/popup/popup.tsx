@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import "../index.css";
+import "../styles/globals.css";
 import "./popup.css";
 import Toaster from "../utils/web-components/Toaster";
 import IconButton from "@/custom/IconButton";

@@ -9,6 +9,14 @@ function getArray(scripts: string | string[]): string[] {
 }
 
 export default class Scripting {
+  /**
+   *
+   * @param tabId represents the tab to run the script in
+   * @param scripts the non-chrome-url path to the script you want to rnu
+   * @param world if ISOLATED, chrome apis are accessible, but customElements is not.
+   *              if MAIN, customElements is accessible, but chrome apis are not.
+   *              ISOLATED is more secure.
+   */
   static async executeScripts(
     tabId: number,
     scripts: string | string[],
@@ -45,16 +53,18 @@ export default class Scripting {
     return result[0].result as T;
   }
 
+  static async executeFunctionNoArgs<T>(tabId: number, cb: () => Promise<T>) {
+    const result = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: cb,
+      args: [{}],
+    });
+    return result[0].result as T;
+  }
+
   static async insertCss(tabId: number, cssFiles: string | string[]) {
     await chrome.scripting.insertCSS({
       files: getArray(cssFiles),
-      target: { tabId },
-    });
-  }
-
-  static async insertCssString(tabId: number, css: string) {
-    await chrome.scripting.insertCSS({
-      css,
       target: { tabId },
     });
   }
