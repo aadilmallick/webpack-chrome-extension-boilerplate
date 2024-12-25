@@ -80,8 +80,8 @@ class Toast {
 }
 
 export default class Toaster extends WebComponent<typeof observedAttributes> {
-  private position: ToastManagerOptions["position"];
-  private timeout: number;
+  private position!: ToastManagerOptions["position"];
+  private timeout!: number;
   constructor() {
     super({
       templateId: "toaster-element",
@@ -108,7 +108,7 @@ export default class Toaster extends WebComponent<typeof observedAttributes> {
       "bottom-right") as ToastManagerOptions["position"];
     this.timeout = (this.dataset.timeout || 3000) as number;
     console.log(this.position, this.timeout);
-    this.$(".toast-container")?.classList.add(this.position);
+    this.$(".toast-container")?.classList.add(this.position!);
   }
 
   static get observedAttributes() {
@@ -244,7 +244,7 @@ export default class Toaster extends WebComponent<typeof observedAttributes> {
       type,
       duration: this.timeout,
     });
-    this.$(".toast-container").appendChild(toast.element);
+    this.$throw(".toast-container")!.appendChild(toast.element);
     toast.show();
   }
 

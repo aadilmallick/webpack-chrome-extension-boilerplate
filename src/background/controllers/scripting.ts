@@ -6,6 +6,6 @@ export async function getAllScriptableTabs() {
   });
   return tabs
     .filter((tab) => tab.url)
-    .filter((tab) => tab.url.startsWith("http"))
+    .filter((tab) => tab.url!.startsWith("http"))
     .map((tab) => tab.id);
 }

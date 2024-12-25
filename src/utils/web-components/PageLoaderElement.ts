@@ -143,23 +143,25 @@ export class PageLoaderElement extends WebComponent<PropsArray> {
     observableAttributes.forEach((attr) => {
       const value = this.getObservableAttr(attr);
       if (!value) return;
+      const pageLoaderVariablesManager = this.pageLoaderVariablesManager;
+      if (!pageLoaderVariablesManager) return;
       switch (attr) {
         case "data-size":
-          this.pageLoaderVariablesManager.set("size", value as `${number}rem`);
+          pageLoaderVariablesManager.set("size", value as `${number}rem`);
           break;
         case "data-color":
-          this.pageLoaderVariablesManager.set(
+          pageLoaderVariablesManager.set(
             "color",
-            value || defaults["data-color"]
+            value || defaults["data-color"]!
           );
           break;
         case "data-animation-speed-seconds":
-          this.pageLoaderVariablesManager.set("time", `${Number(value)}s`);
+          pageLoaderVariablesManager.set("time", `${Number(value)}s`);
           break;
         case "data-loader-background":
-          this.pageLoaderVariablesManager.set(
+          pageLoaderVariablesManager.set(
             "loader-background",
-            value || defaults["data-loader-background"]
+            value || defaults["data-loader-background"]!
           );
           break;
         default:
@@ -169,6 +171,7 @@ export class PageLoaderElement extends WebComponent<PropsArray> {
   }
 
   fadeOut() {
+    if (!this.rootElement) throw new Error("Root element not found");
     const animation = this.rootElement.animate([{ opacity: 0 }], {
       duration: 1000,
     });

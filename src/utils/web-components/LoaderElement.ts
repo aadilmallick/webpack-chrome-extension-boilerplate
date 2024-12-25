@@ -52,9 +52,9 @@ export class LoadingSpinner extends WebComponent<PropsArray> {
     return html`<div class="loader"></div>`;
   }
 
-  private numBars: number;
-  private rootElement: HTMLElement;
-  private loaderVariablesManager: CSSVariablesManager<{
+  private numBars!: number;
+  private rootElement!: HTMLElement;
+  private loaderVariablesManager!: CSSVariablesManager<{
     count: number;
     size: `${number}rem`;
     color: string;
@@ -96,8 +96,8 @@ export class LoadingSpinner extends WebComponent<PropsArray> {
     super.connectedCallback();
     const numBars = Number(this.getObservableAttr("data-num-bars") || 10);
     this.numBars = numBars;
-    const loaderColor = this.getObservableAttr("data-color");
-    const loaderSize = this.getObservableAttr("data-size");
+    const loaderColor = this.getObservableAttr("data-color") || "orange";
+    const loaderSize = this.getObservableAttr("data-size") || "2rem";
     this.rootElement = this.$(".loader") as HTMLElement;
     this.configureSpinner({
       numBars: this.numBars,
