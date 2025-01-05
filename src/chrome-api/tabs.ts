@@ -163,3 +163,74 @@ export class TabModel {
     return await chrome.tabs.update(this.tab.id, { url });
   }
 }
+
+export class TabGroups {
+  static getAll(options?: { currentWindow?: boolean }) {
+    if (options?.currentWindow) {
+      return chrome.tabGroups.query({
+        windowId: chrome.windows.WINDOW_ID_CURRENT,
+      });
+    }
+    return chrome.tabGroups.query({});
+  }
+
+  static getGroupById(groupId: number) {
+    return chrome.tabGroups.get(groupId);
+  }
+
+  static updateTabGroup(
+    groupId: number,
+    options: {
+      title?: string;
+      color?: chrome.tabGroups.ColorEnum;
+      collapsed?: boolean;
+    }
+  ) {
+    return chrome.tabGroups.update(groupId, {
+      title: options.title,
+      color: options.color,
+      collapsed: options.collapsed,
+    });
+  }
+
+  static query({ windowId, title }: { windowId?: number; title?: string }) {
+    return chrome.tabGroups.query({ windowId, title });
+  }
+
+  /**
+   *
+   * @param tabIds the tab ids to group together
+   * @returns group id
+   */
+  static createTabGroup(tabIds: number[]) {
+    return chrome.tabs.group({ tabIds });
+  }
+}
+
+export class TabGroupModel {
+  constructor(public group: chrome.tabGroups.TabGroup) {}
+
+  public get id() {
+    return this.group.id;
+  }
+
+  getTabs() {
+    return chrome.tabs.query({ groupId: this.group.id });
+  }
+
+  changeTitle(title: string) {
+    return TabGroups.updateTabGroup(this.group.id, { title });
+  }
+
+  changeColor(color: chrome.tabGroups.ColorEnum) {
+    return TabGroups.updateTabGroup(this.group.id, { color });
+  }
+
+  collapse() {
+    return TabGroups.updateTabGroup(this.group.id, { collapsed: true });
+  }
+
+  uncollapse() {
+    return TabGroups.updateTabGroup(this.group.id, { collapsed: false });
+  }
+}
