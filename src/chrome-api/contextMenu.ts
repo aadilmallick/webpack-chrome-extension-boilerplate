@@ -29,7 +29,7 @@ export default class ContextMenu {
     chrome.contextMenus.onClicked.addListener(this.cb);
   }
 
-  update(args: chrome.contextMenus.UpdateProperties) {
+  update(args: chrome.contextMenus.CreateProperties) {
     chrome.contextMenus.update(this.menuId, args);
   }
 

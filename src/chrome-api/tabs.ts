@@ -182,7 +182,7 @@ export class TabGroups {
     groupId: number,
     options: {
       title?: string;
-      color?: chrome.tabGroups.ColorEnum;
+      color?: chrome.tabGroups.Color;
       collapsed?: boolean;
     }
   ) {
@@ -222,7 +222,7 @@ export class TabGroupModel {
     return TabGroups.updateTabGroup(this.group.id, { title });
   }
 
-  changeColor(color: chrome.tabGroups.ColorEnum) {
+  changeColor(color: chrome.tabGroups.Color) {
     return TabGroups.updateTabGroup(this.group.id, { color });
   }
 

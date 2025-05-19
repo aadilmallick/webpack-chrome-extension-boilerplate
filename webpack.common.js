@@ -27,6 +27,8 @@ class ContentScriptEntryPoint {
 
 const contentScriptEntryPointFactory = {
   // add entry points here
+
+  /** @type {ContentScriptEntryPoint[]} */
   entryPoints: [],
   optimize: function (chunkName) {
     if (this.entryPoints.length === 0) {
@@ -98,6 +100,15 @@ module.exports = {
     path: path.resolve("dist"),
   },
   optimization: {
+    /**
+     * Split chunks into separate files.
+     *
+     * We don't want to split the content script because it needs to be bundled
+     * with the rest of the extension and use libraries.
+     *
+     * We also don't want to split the background script because it needs to be
+     * bundled with the rest of the extension and use libraries.
+     */
     splitChunks: {
       chunks(chunk) {
         const contentChunksOptimized = contentScriptEntryPointFactory.optimize(

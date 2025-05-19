@@ -18,17 +18,48 @@ export default class NotificationModel {
     });
   }
 
-  constructor(private notificationId: string) {}
+  constructor(public readonly notificationId: string) {}
 
-  showNotification(
-    options: chrome.notifications.NotificationOptions<true>,
-    cb?: (notificationId: string) => void
-  ) {
-    chrome.notifications.create(this.notificationId, options, cb);
+  async showNotification(options: chrome.notifications.NotificationCreateOptions) {
+    return await chrome.notifications.create(this.notificationId, options);
   }
 
-  clearNotification() {
-    chrome.notifications.clear(this.notificationId);
+  async clearNotification() {
+    return await chrome.notifications.clear(this.notificationId);
+  }
+
+  onClicked(callback: () => void) {
+    const cb = (notificationId: string) => {
+      if (notificationId === this.notificationId) {
+        callback();
+      }
+    };
+    NotificationModel.onNotificationClicked(cb);
+  }
+
+  onClosed(callback: () => void) {
+    const cb = (notificationId: string) => {
+      if (notificationId === this.notificationId) {
+        callback();
+      }
+    };
+    NotificationModel.onNotificationClosed(cb);
+  }
+
+  static onNotificationClicked(callback: (notificationId: string) => void) {
+    const cb = (notificationId: string) => {
+      callback(notificationId);
+    };
+    chrome.notifications.onClicked.addListener(cb);
+    return cb;
+  }
+
+  static onNotificationClosed(callback: (notificationId: string) => void) {
+    const cb = (notificationId: string) => {
+      callback(notificationId);
+    };
+    chrome.notifications.onClosed.addListener(cb);
+    return cb;
   }
 }
 
