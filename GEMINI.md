@@ -79,3 +79,9 @@ To work with this project, you will typically use scripts defined in `package.js
 - `npm i` to install dependencies
 - `npm start` starts a development server that watches for file changes and rebuilds the extension automatically.
 - `npm run build` will create a production-ready, optimized build of the extension in a `dist` or `build` folder, which can then be loaded into Chrome or packaged for the Chrome Web Store.
+
+## Instructions for LLM
+
+1. Install dependencies with `npm install`. you are allowed to install any other necessary libraries and packages at any other time, when preferred, to complete the task
+2. Test build and app errors with `npm run build`, which builds the chrome extension with `tsc` and webpack. keep developing the app while periodically testing with `npm run build` to see if any errors come up.
+3. Change `static/manifest.json` when necessary to reflect permissions, other scripts or extension components, app description and title, and all other necessary metadata.
