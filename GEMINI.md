@@ -76,5 +76,6 @@ Here is a breakdown of the key files and directories:
 
 To work with this project, you will typically use scripts defined in `package.json`. you should also add the appropriate permissions and resources in the `static/manifest.json`.
 
-- `npm run dev` or a similar command will likely start a development server that watches for file changes and rebuilds the extension automatically.
+- `npm i` to install dependencies
+- `npm start` starts a development server that watches for file changes and rebuilds the extension automatically.
 - `npm run build` will create a production-ready, optimized build of the extension in a `dist` or `build` folder, which can then be loaded into Chrome or packaged for the Chrome Web Store.
